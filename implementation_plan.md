@@ -7,7 +7,7 @@ Pre-Trade Intelligence Agent for Solana — Birdeye Data BIP Sprint 4
 
 | # | Phase | Status |
 |---|-------|--------|
-| 1 | Supabase schema + RLS policies | 🔄 |
+| 1 | Convex schema + access rules | 🔄 |
 | 2 | TypeScript types (`types/index.ts`) | 🔄 |
 | 3 | `lib/cache/redis.ts` — cache foundation | 🔄 |
 | 4 | `lib/birdeye/client.ts` — circuit breaker | 🔄 |
@@ -40,7 +40,7 @@ graph TB
         CRON --> SCAN["Scan Pipeline"]
         SCAN --> BE["Birdeye API"]
         SCAN --> SCORE["Scoring Engine"]
-        SCORE --> DB["Supabase"]
+        SCORE --> DB["Convex"]
         SCORE --> NOTIFY["Observer: TelegramNotifier"]
         SCORE --> PERSIST["Observer: DatabasePersister"]
     end
@@ -50,7 +50,7 @@ graph TB
         REDIS["Upstash Redis"]
         DB
         TG["Telegram API"]
-        AI["Anthropic Claude"]
+        AI["GenAI provider"]
     end
     
     subgraph "Client"
@@ -69,5 +69,5 @@ graph TB
 - **Strategy** → Scoring (Conservative vs Aggressive)
 - **Circuit Breaker** → Birdeye API client
 - **Observer** → Scan pipeline event system
-- **Repository** → Supabase data access
+- **Repository** → Convex data access
 - **Factory** → Rate limiter creation

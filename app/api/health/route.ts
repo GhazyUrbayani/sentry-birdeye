@@ -1,27 +1,18 @@
 import { NextResponse } from 'next/server';
-import { createClient } from '@supabase/supabase-js';
 
 import type { HealthStatusResponse } from '@/types';
 import { BirdeyeClient } from '@/lib/birdeye/client';
 import { cache } from '@/lib/cache/redis';
+import { convexQuery } from '@/lib/convex/client';
 
 export const runtime = 'edge';
 
 const startedAtMs = Date.now();
 
-function env(name: string): string {
-  const v = process.env[name];
-  if (!v) throw new Error(`Missing env var: ${name}`);
-  return v;
-}
-
-async function supabaseReachable(): Promise<boolean> {
+async function convexReachable(): Promise<boolean> {
   try {
-    const supabase = createClient(env('NEXT_PUBLIC_SUPABASE_URL'), env('NEXT_PUBLIC_SUPABASE_ANON_KEY'), {
-      auth: { persistSession: false },
-    });
-    const { error } = await supabase.from('token_scans').select('id').limit(1);
-    return !error;
+    await convexQuery('tokenScans:listLatest', { limit: 1 });
+    return true;
   } catch {
     return false;
   }
@@ -42,14 +33,14 @@ async function birdeyeReachable(): Promise<boolean> {
 }
 
 export async function GET() {
-  const [redisOk, supabaseOk, birdeyeOk, lastScan] = await Promise.all([
+  const [redisOk, convexOk, birdeyeOk, lastScan] = await Promise.all([
     cache.ping(),
-    supabaseReachable(),
+    convexReachable(),
     birdeyeReachable(),
     cache.getJson<{ lastScanAt: string }>('sentry:lastScan'),
   ]);
 
-  const degraded = !(redisOk && supabaseOk && birdeyeOk);
+  const degraded = !(redisOk && convexOk && birdeyeOk);
   const status: HealthStatusResponse['status'] = degraded ? 'degraded' : 'ok';
 
   const body: HealthStatusResponse = {
@@ -58,7 +49,7 @@ export async function GET() {
     lastScanAt: lastScan.hit ? lastScan.value.lastScanAt : null,
     birdeye_reachable: birdeyeOk,
     redis_reachable: redisOk,
-    supabase_reachable: supabaseOk,
+    convex_reachable: convexOk,
   };
 
   return NextResponse.json(body, { status: degraded ? 503 : 200 });

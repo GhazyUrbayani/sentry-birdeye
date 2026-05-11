@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { createClient } from '@supabase/supabase-js';
 
-import type { TokenScansRow, TokenScanRecord } from '@/types';
+import { convexQuery } from '@/lib/convex/client';
+import type { TokenScanRecord } from '@/types';
 import { DefaultRateLimiterFactory } from '@/lib/ratelimit/limiters';
 
 export const runtime = 'edge';
@@ -12,29 +12,8 @@ const QuerySchema = z.object({
   stream: z.coerce.number().int().optional(),
 });
 
-function env(name: string): string {
-  const v = process.env[name];
-  if (!v) throw new Error(`Missing env var: ${name}`);
-  return v;
-}
-
-function mapRow(row: TokenScansRow): TokenScanRecord {
-  return {
-    id: row.id,
-    address: row.address,
-    symbol: row.symbol,
-    score: row.score,
-    grade: row.grade,
-    flags: (row.flags ?? []) as unknown as TokenScanRecord['flags'],
-    aiBrief: row.ai_brief,
-    liquidity: row.liquidity,
-    volume24h: row.volume_24h,
-    priceChange24h: row.price_change_24h,
-    top10HolderPct: row.top10_holder_pct,
-    mintAuthDisabled: row.mint_auth_disabled,
-    freezeAuthDisabled: row.freeze_auth_disabled,
-    scannedAt: row.scanned_at,
-  };
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : 'Unknown error';
 }
 
 function ipKey(req: Request): string {
@@ -58,10 +37,6 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'rate_limited' }, { status: 429, headers: { 'Retry-After': String(Math.ceil((decision.retryAfterMs ?? 0) / 1000)) } });
   }
 
-  const supabase = createClient(env('NEXT_PUBLIC_SUPABASE_URL'), env('NEXT_PUBLIC_SUPABASE_ANON_KEY'), {
-    auth: { persistSession: false },
-  });
-
   const limit = parsed.data.limit;
 
   // SSE mode (RadarFeed)
@@ -78,21 +53,15 @@ export async function GET(req: Request) {
         // Poll every 5s for newest token scans; keep only latest seen.
         let lastSeen = '';
         while (!closed) {
-          const { data, error } = await supabase
-            .from('token_scans')
-            .select('*')
-            .order('scanned_at', { ascending: false })
-            .limit(10);
-
-          if (error) {
-            send({ type: 'error', message: error.message });
-          } else {
-            const rows = (data ?? []) as unknown as TokenScansRow[];
+          try {
+            const rows = await convexQuery<TokenScanRecord[]>('tokenScans:listLatest', { limit: 10 });
             for (const row of rows) {
               if (row.id === lastSeen) break;
-              send({ type: 'token', record: mapRow(row) });
+              send({ type: 'token', record: row });
             }
             lastSeen = rows[0]?.id ?? lastSeen;
+          } catch (error) {
+            send({ type: 'error', message: errorMessage(error) });
           }
 
           await new Promise<void>((r) => setTimeout(r, 5000));
@@ -115,15 +84,11 @@ export async function GET(req: Request) {
     });
   }
 
-  const { data, error } = await supabase
-    .from('token_scans')
-    .select('*')
-    .order('scanned_at', { ascending: false })
-    .limit(limit);
-
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-
-  const rows = (data ?? []) as unknown as TokenScansRow[];
-  return NextResponse.json({ tokens: rows.map(mapRow) });
+  try {
+    const rows = await convexQuery<TokenScanRecord[]>('tokenScans:listLatest', { limit });
+    return NextResponse.json({ tokens: rows });
+  } catch (error) {
+    return NextResponse.json({ error: errorMessage(error) }, { status: 500 });
+  }
 }
 

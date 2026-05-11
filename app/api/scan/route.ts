@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { createClient } from '@supabase/supabase-js';
 
 import type { HealthStatusResponse, TokenScanRecord, TokenSnapshot } from '@/types';
 import { BirdeyeClient } from '@/lib/birdeye/client';
 import { createBirdeyeEndpoints } from '@/lib/birdeye/endpoints';
 import { cache } from '@/lib/cache/redis';
+import { convexMutation } from '@/lib/convex/client';
 import { AggressiveScorer, ConservativeScorer, ScoreEngineImpl } from '@/lib/scoring/engine';
 
 export const runtime = 'edge';
@@ -28,6 +28,10 @@ function env(name: string): string {
 
 function toIso(d: Date): string {
   return d.toISOString();
+}
+
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : 'Unknown error';
 }
 
 function mapScanRecord(input: {
@@ -55,32 +59,12 @@ function mapScanRecord(input: {
   };
 }
 
-type SupabaseInsertResult = { error: { message: string } | null };
-type SupabaseLike = {
-  from: (table: 'token_scans') => {
-    insert: (row: Record<string, unknown>) => Promise<SupabaseInsertResult>;
-  };
-};
-
-async function upsertScan(supabase: SupabaseLike, record: TokenScanRecord): Promise<void> {
-  // Service role bypasses RLS; still use parameterized Supabase client (SQLi-safe).
-  const { error } = await supabase.from('token_scans').insert({
-    id: record.id,
-    address: record.address,
-    symbol: record.symbol ?? null,
-    score: record.score,
-    grade: record.grade,
-    flags: record.flags,
-    ai_brief: record.aiBrief ?? null,
-    liquidity: record.liquidity ?? null,
-    volume_24h: record.volume24h ?? null,
-    price_change_24h: record.priceChange24h ?? null,
-    top10_holder_pct: record.top10HolderPct ?? null,
-    mint_auth_disabled: record.mintAuthDisabled ?? null,
-    freeze_auth_disabled: record.freezeAuthDisabled ?? null,
-    scanned_at: record.scannedAt,
-  });
-  if (error) throw new Error(`Supabase insert failed: ${error.message}`);
+async function upsertScan(record: TokenScanRecord): Promise<void> {
+  try {
+    await convexMutation('tokenScans:insert', { record });
+  } catch (error) {
+    throw new Error(`Convex insert failed: ${errorMessage(error)}`);
+  }
 }
 
 export async function GET(req: Request) {
@@ -114,10 +98,6 @@ export async function GET(req: Request) {
     aggressive: new AggressiveScorer(),
     aggressiveAgeSecondsThreshold: 6 * 60 * 60,
   });
-
-  const supabase = createClient(env('NEXT_PUBLIC_SUPABASE_URL'), env('SUPABASE_SERVICE_ROLE_KEY'), {
-    auth: { persistSession: false },
-  }) as unknown as SupabaseLike;
 
   // Phase 8 minimal pipeline:
   // - fetch new listings (limit 12)
@@ -162,7 +142,7 @@ export async function GET(req: Request) {
       scannedAt,
       aiBrief: null,
     });
-    await upsertScan(supabase, record);
+    await upsertScan(record);
     records.push(record);
   }
 

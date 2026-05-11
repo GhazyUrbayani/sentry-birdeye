@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { createClient } from '@supabase/supabase-js';
 
+import { convexMutation } from '@/lib/convex/client';
 import { DefaultRateLimiterFactory } from '@/lib/ratelimit/limiters';
 import type { SubscriberFilter } from '@/types';
 
@@ -13,10 +13,8 @@ const BodySchema = z.object({
   filter: z.enum(['ALL', 'SAFE', 'CAUTION']).default('SAFE'),
 });
 
-function env(name: string): string {
-  const v = process.env[name];
-  if (!v) throw new Error(`Missing env var: ${name}`);
-  return v;
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : 'Unknown error';
 }
 
 function ipKey(req: Request): string {
@@ -33,18 +31,16 @@ export async function POST(req: Request) {
   const parsed = BodySchema.safeParse(json);
   if (!parsed.success) return NextResponse.json({ error: 'invalid_body', issues: parsed.error.issues }, { status: 400 });
 
-  const supabase = createClient(env('NEXT_PUBLIC_SUPABASE_URL'), env('SUPABASE_SERVICE_ROLE_KEY'), {
-    auth: { persistSession: false },
-  });
-
-  const { error } = await supabase.from('subscribers').upsert({
-    chat_id: parsed.data.chat_id,
-    username: parsed.data.username ?? null,
-    filter: parsed.data.filter,
-    active: true,
-  });
-
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  try {
+    await convexMutation('subscribers:upsert', {
+      chatId: parsed.data.chat_id,
+      username: parsed.data.username ?? null,
+      filter: parsed.data.filter,
+      active: true,
+    });
+  } catch (error) {
+    return NextResponse.json({ error: errorMessage(error) }, { status: 500 });
+  }
   return NextResponse.json({ ok: true });
 }
 

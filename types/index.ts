@@ -102,7 +102,7 @@ export interface TokenScanRecord {
 }
 
 // -----------------------------
-// Supabase schema row types
+// Storage schema row types (legacy)
 // -----------------------------
 
 export interface TokenScansRow {
@@ -407,7 +407,7 @@ export interface TelegramQueueJob {
 }
 
 // -----------------------------
-// AI narrator (Anthropic) — optional
+// AI narrator (GenAI) — optional
 // -----------------------------
 
 export interface AiBriefInput {
@@ -435,6 +435,6 @@ export interface HealthStatusResponse {
   lastScanAt: ISODateTimeString | null;
   birdeye_reachable: boolean;
   redis_reachable: boolean;
-  supabase_reachable: boolean;
+  convex_reachable: boolean;
 }
 

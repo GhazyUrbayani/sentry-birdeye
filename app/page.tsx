@@ -1,66 +1,34 @@
 import { Suspense } from 'react';
-import { createClient } from '@supabase/supabase-js';
 import { RadarFeed } from '@/components/RadarFeed/RadarFeed';
 import { TokenCard } from '@/components/TokenCard/TokenCard';
 import { TokenCardSkeleton } from '@/components/TokenCard/TokenCardSkeleton';
-import type { TokenScansRow, TokenScanRecord } from '@/types';
+import { convexQuery } from '@/lib/convex/client';
+import type { TokenScanRecord } from '@/types';
 
 export const runtime = 'edge';
 
-function env(name: string): string {
-  const v = process.env[name];
-  if (!v) throw new Error(`Missing env var: ${name}`);
-  return v;
-}
-
-function mapRow(row: TokenScansRow): TokenScanRecord {
-  return {
-    id: row.id,
-    address: row.address,
-    symbol: row.symbol,
-    score: row.score,
-    grade: row.grade,
-    flags: (row.flags ?? []) as unknown as TokenScanRecord['flags'],
-    aiBrief: row.ai_brief,
-    liquidity: row.liquidity,
-    volume24h: row.volume_24h,
-    priceChange24h: row.price_change_24h,
-    top10HolderPct: row.top10_holder_pct,
-    mintAuthDisabled: row.mint_auth_disabled,
-    freezeAuthDisabled: row.freeze_auth_disabled,
-    scannedAt: row.scanned_at,
-  };
+function errorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : 'Unknown error';
 }
 
 async function LatestTokens() {
-  const supabase = createClient(env('NEXT_PUBLIC_SUPABASE_URL'), env('NEXT_PUBLIC_SUPABASE_ANON_KEY'), {
-    auth: { persistSession: false },
-  });
+  try {
+    const tokens = await convexQuery<TokenScanRecord[]>('tokenScans:listLatest', { limit: 12 });
 
-  const { data, error } = await supabase
-    .from('token_scans')
-    .select('*')
-    .order('scanned_at', { ascending: false })
-    .limit(12);
-
-  if (error) {
+    return (
+      <div className="grid gap-3 md:grid-cols-2">
+        {tokens.map((t) => (
+          <TokenCard key={t.id} token={t} />
+        ))}
+      </div>
+    );
+  } catch (error) {
     return (
       <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-white/70">
-        Failed to load tokens. ({error.message})
+        Failed to load tokens. ({errorMessage(error)})
       </div>
     );
   }
-
-  const rows = (data ?? []) as unknown as TokenScansRow[];
-  const tokens = rows.map(mapRow);
-
-  return (
-    <div className="grid gap-3 md:grid-cols-2">
-      {tokens.map((t) => (
-        <TokenCard key={t.id} token={t} />
-      ))}
-    </div>
-  );
 }
 
 export default function Page() {
@@ -69,7 +37,7 @@ export default function Page() {
       <header className="mb-8 space-y-2">
         <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70">
           <span className="h-2 w-2 rounded-full bg-emerald-400" />
-          Edge + Redis cache + Supabase
+          Edge + Redis cache + Convex
         </div>
         <h1 className="text-2xl font-semibold tracking-tight">SENTRY — Pre-Trade Intelligence</h1>
         <p className="max-w-2xl text-sm text-white/70">

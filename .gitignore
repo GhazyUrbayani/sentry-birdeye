@@ -38,5 +38,9 @@ coverage/
 .stylelintcache
 *.tsbuildinfo
 
+# AI tooling
+.agents/
+convex/_generated/ai/ai-files.state.json
+
 # OS
 .DS_Store

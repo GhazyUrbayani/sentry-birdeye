@@ -4,7 +4,7 @@
 
 AI-powered pre-trade intelligence for Solana traders
 
-Next.js 15 (App Router) + TypeScript + TailwindCSS + Supabase + Upstash Redis.
+Next.js 15 (App Router) + TypeScript + TailwindCSS + Convex + Upstash Redis.
 
 ## Architecture diagram
 ```mermaid

@@ -1,9 +1,2 @@
-{
-  "crons": [
-    {
-      "path": "/api/scan?trigger=cron",
-      "schedule": "*/5 * * * *"
-    }
-  ]
-}
+{}
 
