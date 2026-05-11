@@ -17,9 +17,9 @@ function getClient(): ConvexHttpClient {
 
 export async function convexQuery<T>(name: FunctionName, args: Record<string, unknown>): Promise<T> {
   // Convex expects typed function refs; string names avoid codegen in this repo.
-  return getClient().query(name as never, args) as Promise<T>;
+  return getClient().query(name as never, args as never) as Promise<T>;
 }
 
 export async function convexMutation<T>(name: FunctionName, args: Record<string, unknown>): Promise<T> {
-  return getClient().mutation(name as never, args) as Promise<T>;
+  return getClient().mutation(name as never, args as never) as Promise<T>;
 }
