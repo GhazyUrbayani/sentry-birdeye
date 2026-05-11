@@ -34,7 +34,7 @@ export default function Page() {
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
       <header className="mb-8 space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">SENTRY — Pre-Trade Intelligence</h1>
+        <h1 className="text-2xl font-semibold tracking-tight">SENTRY - PreTrade Intelligence</h1>
         <p className="max-w-2xl text-sm text-white/70">
           Latest scans stream in real time. Grades are computed via strategy-based scoring with circuit-breaker protected Birdeye calls.
         </p>
