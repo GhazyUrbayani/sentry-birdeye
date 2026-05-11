@@ -3,7 +3,7 @@ import { ConvexHttpClient } from 'convex/browser';
 type FunctionName = `${string}:${string}`;
 
 function getConvexUrl(): string {
-  const url = process.env.CONVEX_URL ?? process.env.NEXT_PUBLIC_CONVEX_URL;
+  const url = process.env['CONVEX_URL'] ?? process.env['NEXT_PUBLIC_CONVEX_URL'];
   if (!url) throw new Error('Missing env var: NEXT_PUBLIC_CONVEX_URL');
   return url;
 }
