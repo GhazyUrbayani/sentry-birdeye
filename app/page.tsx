@@ -17,7 +17,7 @@ function errorMessage(error: unknown): string {
 
 export default async function Page({ searchParams }: PageProps) {
   const resolvedSearchParams = searchParams ? await searchParams : undefined;
-  const rawQuery = resolvedSearchParams?.q;
+  const rawQuery = resolvedSearchParams?.['q'];
   const queryRaw =
     typeof rawQuery === 'string'
       ? rawQuery.trim()
