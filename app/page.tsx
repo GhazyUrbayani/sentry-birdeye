@@ -45,7 +45,7 @@ export default async function Page({ searchParams }: PageProps) {
   const showLatest = tokens.length > 0 || Boolean(tokensError);
 
   return (
-    <div className="relative min-h-screen bg-[#0B0E14] overflow-hidden">
+    <div className="relative min-h-screen overflow-hidden">
       {/* Ambient background glows */}
       <div className="pointer-events-none fixed top-[-20%] left-[-10%] h-[500px] w-[500px] rounded-full bg-emerald-500/10 blur-[120px]" />
       <div className="pointer-events-none fixed bottom-[-20%] right-[-10%] h-[600px] w-[600px] rounded-full bg-sky-500/10 blur-[150px]" />

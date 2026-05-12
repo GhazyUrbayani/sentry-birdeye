@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="font-sans">
-      <body className="min-h-screen text-white antialiased">
+      <body className="min-h-screen bg-[#0B0E14] text-white antialiased">
         <MouseGradient />
         {children}
       </body>

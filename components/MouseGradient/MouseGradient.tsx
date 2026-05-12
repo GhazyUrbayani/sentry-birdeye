@@ -19,7 +19,7 @@ export function MouseGradient() {
 
   return (
     <div 
-      className="pointer-events-none fixed inset-0 z-[-1] transition-transform duration-75 ease-out opacity-60"
+      className="pointer-events-none fixed inset-0 z-0 transition-transform duration-75 ease-out opacity-60"
       style={{
         background: `radial-gradient(800px circle at ${position.x}% ${position.y}%, rgba(16, 185, 129, 0.15), rgba(14, 165, 233, 0.05), transparent 50%)`,
       }}
