@@ -5,6 +5,8 @@ import { TokenCardSkeleton } from '@/components/TokenCard/TokenCardSkeleton';
 import { convexQuery } from '@/lib/convex/client';
 import type { TokenScanRecord } from '@/types';
 
+export const dynamic = 'force-dynamic';
+
 
 function errorMessage(error: unknown): string {
   return error instanceof Error ? error.message : 'Unknown error';
@@ -13,6 +15,14 @@ function errorMessage(error: unknown): string {
 async function LatestTokens() {
   try {
     const tokens = await convexQuery<TokenScanRecord[]>('tokenScans:listLatest', { limit: 12 });
+
+    if (tokens.length === 0) {
+      return (
+        <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-white/70">
+          No scans yet. Run <span className="text-white/80">/api/scan</span> (requires <span className="text-white/80">CRON_SECRET</span>) or wait for the scheduler.
+        </div>
+      );
+    }
 
     return (
       <div className="grid gap-3 md:grid-cols-2">
