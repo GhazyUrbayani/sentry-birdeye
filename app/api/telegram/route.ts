@@ -60,6 +60,18 @@ export async function POST(req: Request) {
             },
           });
         }
+      } else {
+        // Fallback response for any other chat messages
+        const token = process.env['TELEGRAM_BOT_TOKEN'];
+        if (token) {
+          await sendTelegramMessage({
+            token,
+            message: {
+              chatId,
+              text: `Status: SENTRY is actively monitoring the Solana network 🟢\n\nI am an automated broadcast bot. You don't need to send me any commands. I will automatically send an alert here as soon as a new token passes the risk evaluation!`,
+            },
+          });
+        }
       }
     }
 

@@ -156,7 +156,7 @@ export async function GET(req: Request) {
   try {
     const alertableTokens = records.filter(r => r.grade === 'SAFE' || r.grade === 'DEGEN');
     if (alertableTokens.length > 0) {
-      const activeSubscribers = await convexQuery<Array<{ chatId: number }>>('subscribers:listActive');
+      const activeSubscribers = await convexQuery<Array<{ chatId: number }>>('subscribers:listActive', {});
       if (activeSubscribers && activeSubscribers.length > 0) {
         const tgToken = process.env['TELEGRAM_BOT_TOKEN'];
         const appUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'https://sentry.birdeye.so';
