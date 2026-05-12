@@ -5,7 +5,7 @@
   ### *High-Performance Pre-Trade Risk Intelligence & Solana Token Scanner*
 
 <img width="1470" height="716" alt="image" src="https://github.com/user-attachments/assets/602e2b03-cf3c-45f7-854f-b87bff910864" />
-
+<br>
   <p align="center">
     <img src="https://img.shields.io/badge/Next.js-15.0-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js 15" />
     <img src="https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React 19" />
