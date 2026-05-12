@@ -29,6 +29,16 @@
 
 ---
 
+## 🎥 Platform Demo
+
+<div align="center">
+  <img src="./platform_demo.webp" alt="SENTRY Platform Demo" width="800" />
+  <br />
+  <i>*Animasi WebP dari UI Platform SENTRY yang sedang berjalan</i>
+</div>
+
+---
+
 ## 🎯 Konteks & Problem Statement
 
 > **Setiap detik, puluhan token meme baru diluncurkan di jaringan Solana. Namun, lebih dari 98% di antaranya berakhir sebagai rugpull atau penipuan finansial dalam kurun waktu kurang dari 24 jam.**
