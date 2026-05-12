@@ -104,10 +104,10 @@ export async function GET(req: Request) {
   });
 
   // Phase 8 minimal pipeline:
-  // - fetch new listings (limit 12)
+  // - fetch trending tokens (limit 12) to ensure market data is available for demo
   // - for each token, fetch security + holders (sequential batches in later phase)
   // - score + persist
-  const listing = await api.newListing({ limit: 12 });
+  const listing = await api.trending({ limit: 12 });
   if (!listing.ok) {
     return NextResponse.json(
       {
@@ -124,17 +124,18 @@ export async function GET(req: Request) {
 
   for (const item of listing.value) {
     const address = item.address;
-    const [security, holders, overview] = await Promise.all([
+    const [security, holders] = await Promise.all([
       api.tokenSecurity({ address }),
       api.holders({ address }),
-      api.tokenOverview({ address }),
     ]);
 
     const snapshot: TokenSnapshot = {
       identity: { address, symbol: item.symbol ?? null, name: item.name ?? null, logoURI: item.logoURI ?? null },
-      market: overview.ok 
-        ? { liquidity: overview.value.liquidity, volume24h: overview.value.volume24h, priceChange24h: overview.value.priceChange24h }
-        : { liquidity: null, volume24h: null, priceChange24h: null },
+      market: { 
+        liquidity: item.liquidity ?? null, 
+        volume24h: item.volume24h ?? null, 
+        priceChange24h: item.priceChange24h ?? null 
+      },
       security: security.ok
         ? { mintAuthorityDisabled: security.value.mintAuthorityDisabled ?? null, freezeAuthorityDisabled: security.value.freezeAuthorityDisabled ?? null }
         : { mintAuthorityDisabled: null, freezeAuthorityDisabled: null },
