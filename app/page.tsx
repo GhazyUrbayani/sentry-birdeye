@@ -47,10 +47,23 @@ export default async function Page({ searchParams }: PageProps) {
   return (
     <main className="mx-auto max-w-6xl px-4 py-10">
       <header className="mb-8 space-y-2">
-        <h1 className="text-2xl font-semibold tracking-tight">SENTRY - PreTrade Intelligence</h1>
-        <p className="max-w-2xl text-sm text-white/70">
-          Latest scans stream in real time. Grades are computed via strategy-based scoring with circuit-breaker protected Birdeye calls.
-        </p>
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight">SENTRY - PreTrade Intelligence</h1>
+            <p className="max-w-2xl text-sm text-white/70 mt-2">
+              Latest scans stream in real time. Grades are computed via strategy-based scoring with circuit-breaker protected Birdeye calls.
+            </p>
+          </div>
+          <a 
+            href="https://t.me/SENTRYBirdeyeBot" 
+            target="_blank" 
+            rel="noreferrer" 
+            className="shrink-0 flex items-center gap-2 rounded-full bg-sky-500/20 px-4 py-2 text-sm font-medium text-sky-300 hover:bg-sky-500/30 transition-colors"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+            Get TG Alerts
+          </a>
+        </div>
         <form method="get" className="mt-4 flex flex-wrap items-center gap-3">
           <div className="flex w-full max-w-md items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-white/80">
             <span className="text-xs text-white/50">Search</span>
@@ -86,7 +99,7 @@ export default async function Page({ searchParams }: PageProps) {
                 No matches for "{queryRaw}".
               </div>
             ) : (
-              <div className="grid gap-3 md:grid-cols-2">
+              <div className="max-h-[70vh] space-y-3 overflow-y-auto pr-2">
                 {filteredTokens.map((t) => (
                   <TokenCard key={t.id} token={t} />
                 ))}
