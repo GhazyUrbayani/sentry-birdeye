@@ -14,23 +14,6 @@ function formatCurrency(val?: number | null) {
 }
 
 export function TokenCard({ token }: { token: TokenScanRecord & { id?: string } }) {
-  const [isChartOpen, setIsChartOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  // Lock body scroll when modal is open
-  useEffect(() => {
-    if (isChartOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => { document.body.style.overflow = 'unset'; };
-  }, [isChartOpen]);
-
   const symbol = token.symbol ?? 'UNKNOWN';
   const avatar = symbol.slice(0, 2).toUpperCase();
   const scanned = new Date(token.scannedAt).toLocaleTimeString(undefined, {
@@ -111,12 +94,14 @@ export function TokenCard({ token }: { token: TokenScanRecord & { id?: string } 
           >
             Buy Token
           </a>
-          <button 
-            onClick={() => setIsChartOpen(true)}
-            className="flex-1 rounded-lg bg-sky-500/10 py-1.5 text-center text-xs font-medium text-sky-400 hover:bg-sky-500/20 transition-colors cursor-pointer"
+          <a 
+            href={`https://birdeye.so/token/${token.address}?chain=solana`}
+            target="_blank" 
+            rel="noreferrer"
+            className="flex-1 rounded-lg bg-sky-500/10 py-1.5 text-center text-xs font-medium text-sky-400 hover:bg-sky-500/20 transition-colors"
           >
             View Chart
-          </button>
+          </a>
           <a 
             href={`https://solscan.io/token/${token.address}`} 
             target="_blank" 
@@ -127,62 +112,6 @@ export function TokenCard({ token }: { token: TokenScanRecord & { id?: string } 
           </a>
         </div>
       </div>
-
-      {/* Chart Modal (Inline Terminal Experience) */}
-      {mounted && isChartOpen && createPortal(
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
-          <div 
-            className="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer"
-            onClick={() => setIsChartOpen(false)}
-          />
-          <div className="relative w-full max-w-5xl h-[85vh] flex flex-col rounded-2xl border border-white/10 bg-[#0B0E14] shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
-            
-            {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-white/10 px-4 py-3 bg-white/5">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-sky-500/30 to-emerald-500/20 border border-white/10 font-bold text-white/90">
-                  {avatar}
-                </div>
-                <div>
-                  <h3 className="font-semibold text-white/90 text-lg leading-tight flex items-center gap-2">
-                    {symbol} 
-                    <GradeBadge grade={token.grade} />
-                  </h3>
-                  <p className="text-xs text-white/50">{token.address}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <a 
-                  href={`https://jup.ag/swap/SOL-${token.address}`} 
-                  target="_blank" 
-                  rel="noreferrer"
-                  className="rounded-lg bg-emerald-500/20 px-4 py-2 text-sm font-semibold text-emerald-400 hover:bg-emerald-500/30 transition-colors"
-                >
-                  Trade on Jupiter
-                </a>
-                <button 
-                  onClick={() => setIsChartOpen(false)}
-                  className="rounded-lg bg-white/5 p-2 text-white/60 hover:bg-white/10 hover:text-white transition-colors cursor-pointer"
-                  aria-label="Close"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                </button>
-              </div>
-            </div>
-            
-            {/* Modal Body: Chart Iframe */}
-            <div className="flex-1 w-full bg-black/50">
-              <iframe 
-                src={`https://birdeye.so/tv-widget/${token.address}?chain=solana&viewMode=pair&chartInterval=15`}
-                className="w-full h-full border-none"
-                allow="clipboard-write"
-                title={`${symbol} Chart`}
-              />
-            </div>
-          </div>
-        </div>,
-        document.body
-      )}
     </>
   );
 }

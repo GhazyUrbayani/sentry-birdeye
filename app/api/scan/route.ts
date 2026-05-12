@@ -122,14 +122,17 @@ export async function GET(req: Request) {
 
   for (const item of listing.value) {
     const address = item.address;
-    const [security, holders] = await Promise.all([
+    const [security, holders, overview] = await Promise.all([
       api.tokenSecurity({ address }),
       api.holders({ address }),
+      api.tokenOverview({ address }),
     ]);
 
     const snapshot: TokenSnapshot = {
       identity: { address, symbol: item.symbol ?? null, name: item.name ?? null, logoURI: item.logoURI ?? null },
-      market: { liquidity: null, volume24h: null, priceChange24h: null },
+      market: overview.ok 
+        ? { liquidity: overview.value.liquidity, volume24h: overview.value.volume24h, priceChange24h: overview.value.priceChange24h }
+        : { liquidity: null, volume24h: null, priceChange24h: null },
       security: security.ok
         ? { mintAuthorityDisabled: security.value.mintAuthorityDisabled ?? null, freezeAuthorityDisabled: security.value.freezeAuthorityDisabled ?? null }
         : { mintAuthorityDisabled: null, freezeAuthorityDisabled: null },

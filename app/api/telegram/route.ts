@@ -63,12 +63,13 @@ export async function POST(req: Request) {
       } else {
         // Fallback response for any other chat messages
         const token = process.env['TELEGRAM_BOT_TOKEN'];
+        const appUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'https://sentry-birdeye.vercel.app';
         if (token) {
           await sendTelegramMessage({
             token,
             message: {
               chatId,
-              text: `Status: SENTRY is actively monitoring the Solana network 🟢\n\nI am an automated broadcast bot. You don't need to send me any commands. I will automatically send an alert here as soon as a new token passes the risk evaluation!`,
+              text: `Status: SENTRY is actively monitoring the Solana network 🟢\n\nI am an automated broadcast bot. You don't need to send me any commands. I will automatically send an alert here as soon as a new token passes the risk evaluation!\n\n🌐 View Live Dashboard:\n${appUrl}`,
             },
           });
         }

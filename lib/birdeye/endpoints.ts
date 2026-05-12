@@ -18,6 +18,7 @@ const TTL = {
   token_security: 300,
   trending: 60,
   holder: 120,
+  overview: 60,
 } as const;
 
 function key(kind: keyof typeof TTL, parts: string[]): string {
@@ -45,6 +46,12 @@ type TrendingResponse = {
     volume24hUSD?: number | null;
     price24hChangePercent?: number | null;
   }>;
+};
+
+type OverviewResponse = {
+  liquidity?: number | null;
+  volume24hUSD?: number | null;
+  price24hChangePercent?: number | null;
 };
 
 type HolderResponse = {
@@ -162,6 +169,23 @@ export function createBirdeyeEndpoints(input: { client: BirdeyeHttpClient; cache
         priceChange24h: token.price24hChangePercent ?? null,
       }));
       await cache.setJson(cacheKey, mapped, TTL.trending);
+      return { ok: true, value: mapped };
+    },
+
+    async tokenOverview(params: { address: SolanaAddress }): Promise<Result<{ liquidity: number | null, volume24h: number | null, priceChange24h: number | null }, BirdeyeError>> {
+      const cacheKey = key('overview', [params.address]);
+      const hit = await cache.getJson<{ liquidity: number | null, volume24h: number | null, priceChange24h: number | null }>(cacheKey);
+      if (hit.hit) return { ok: true, value: hit.value };
+
+      const res = await client.getJson<OverviewResponse>(`/defi/token_overview?address=${params.address}`);
+      if (!res.ok) return res;
+      
+      const mapped = {
+        liquidity: res.value?.liquidity ?? null,
+        volume24h: res.value?.volume24hUSD ?? null,
+        priceChange24h: res.value?.price24hChangePercent ?? null,
+      };
+      await cache.setJson(cacheKey, mapped, TTL.overview);
       return { ok: true, value: mapped };
     },
 
