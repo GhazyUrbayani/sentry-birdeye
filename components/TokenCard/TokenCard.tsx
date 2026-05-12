@@ -8,6 +8,7 @@ export function TokenCard({ token }: { token: Pick<TokenScanRecord, 'address' | 
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
+    hour12: false,
   });
 
   return (
@@ -28,16 +29,16 @@ export function TokenCard({ token }: { token: Pick<TokenScanRecord, 'address' | 
         </div>
       </div>
 
-      <div className="mt-4 grid grid-cols-3 gap-3 text-xs text-white/70">
+      <div className="mt-4 flex items-center justify-between gap-3 text-xs text-white/70">
         <div className="min-w-0">
           <div className="text-white/50">Flags</div>
           <div className="truncate text-white/80">{token.flags?.length || 0}</div>
         </div>
-        <div className="min-w-0">
+        <div className="min-w-0 text-center">
           <div className="text-white/50">Scanned</div>
           <div className="truncate text-white/80">{scanned}</div>
         </div>
-        <div className="min-w-0">
+        <div className="min-w-0 text-right">
           <div className="text-white/50">Link</div>
           <a className="block truncate text-sky-300 hover:text-sky-200" href={`https://solscan.io/token/${token.address}`} target="_blank" rel="noreferrer">
             Solscan
