@@ -20,7 +20,7 @@ function parseEvent(data: string): StreamEvent | null {
   }
 }
 
-export function RadarFeed() {
+export function RadarFeed({ query = '' }: { query?: string }) {
   const [items, setItems] = useState<TokenScanRecord[]>([]);
   const [connected, setConnected] = useState(false);
 
@@ -40,6 +40,16 @@ export function RadarFeed() {
     return () => es.close();
   }, [streamUrl]);
 
+  const normalizedQuery = query.trim().toLowerCase();
+  const filtered = useMemo(() => {
+    if (!normalizedQuery) return items;
+    return items.filter((item) => {
+      const symbol = item.symbol?.toLowerCase() ?? '';
+      const address = item.address.toLowerCase();
+      return symbol.includes(normalizedQuery) || address.includes(normalizedQuery);
+    });
+  }, [items, normalizedQuery]);
+
   return (
     <section className="space-y-3">
       <div className="flex items-center justify-between">
@@ -49,18 +59,24 @@ export function RadarFeed() {
         </span>
       </div>
 
-      {items.length === 0 ? (
-        <div className="grid gap-3">
-          <TokenCardSkeleton />
-          <TokenCardSkeleton />
-        </div>
-      ) : (
-        <div className="grid gap-3">
-          {items.map((t) => (
-            <TokenCard key={t.id} token={t} />
-          ))}
-        </div>
-      )}
+      <div className="max-h-[70vh] space-y-3 overflow-y-auto pr-2">
+        {items.length === 0 ? (
+          <div className="grid gap-3">
+            <TokenCardSkeleton />
+            <TokenCardSkeleton />
+          </div>
+        ) : filtered.length === 0 ? (
+          <div className="rounded-xl border border-white/10 bg-white/5 p-4 text-sm text-white/70">
+            No radar matches.
+          </div>
+        ) : (
+          <div className="grid gap-3">
+            {filtered.map((t) => (
+              <TokenCard key={t.id} token={t} />
+            ))}
+          </div>
+        )}
+      </div>
     </section>
   );
 }

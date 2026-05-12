@@ -1,22 +1,18 @@
-import Image from 'next/image';
 import type { TokenScanRecord } from '@/types';
 import { GradeBadge } from '@/components/Gradebadge/GradeBadge';
 
 export function TokenCard({ token }: { token: Pick<TokenScanRecord, 'address' | 'symbol' | 'grade' | 'score' | 'flags' | 'scannedAt'> & { id?: string } }) {
   const symbol = token.symbol ?? 'UNKNOWN';
+  const avatar = symbol.slice(0, 2).toUpperCase();
   const scanned = new Date(token.scannedAt).toLocaleString();
 
   return (
     <div className="min-h-[120px] w-full rounded-xl border border-white/10 bg-gradient-to-b from-white/5 to-white/0 p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
-          <Image
-            src="/token-placeholder.png"
-            alt={`${symbol} logo`}
-            width={40}
-            height={40}
-            className="h-10 w-10 rounded-full border border-white/10 bg-white/5"
-          />
+          <div className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-gradient-to-br from-sky-500/30 via-emerald-500/20 to-white/5 text-xs font-semibold text-white/80">
+            {avatar}
+          </div>
           <div className="min-w-0">
             <div className="truncate text-sm font-semibold text-white">{symbol}</div>
             <div className="truncate text-xs text-white/60">{token.address}</div>
