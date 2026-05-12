@@ -168,13 +168,13 @@ export function TokenCard({ token }: { token: TokenScanRecord & { id?: string } 
               </div>
             </div>
             
-            {/* Modal Body: Birdeye Iframe */}
+            {/* Modal Body: Chart Iframe */}
             <div className="flex-1 w-full bg-black/50">
               <iframe 
-                src={`https://birdeye.so/tv-widget/${token.address}?chain=solana&viewMode=pair&chartInterval=15&chartType=CANDLE&chartTimezone=Europe%2FBerlin&chartLeftToolbar=show&theme=dark`}
+                src={`https://dexscreener.com/solana/${token.address}?embed=1&theme=dark`}
                 className="w-full h-full border-none"
                 allow="clipboard-write"
-                title={`${symbol} Birdeye Chart`}
+                title={`${symbol} Chart`}
               />
             </div>
           </div>
