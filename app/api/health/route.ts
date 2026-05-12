@@ -28,7 +28,9 @@ async function birdeyeReachable(): Promise<boolean> {
     retry: { maxRetries: 0, baseDelayMs: 1000, maxDelayMs: 4000 },
     circuitBreaker: { failureThreshold: 3, failureWindowMs: 10_000, openStateDurationMs: 30_000 },
   });
-  const res = await client.getJson<unknown>('/defi/v2/trending?limit=1');
+  const res = await client.getJson<unknown>(
+    '/defi/token_trending?sort_by=rank&interval=24h&sort_type=asc&offset=0&limit=1&ui_amount_mode=scaled',
+  );
   return res.ok;
 }
 

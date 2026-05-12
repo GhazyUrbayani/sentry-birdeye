@@ -202,6 +202,7 @@ export interface HttpRequestMeta {
 export interface BirdeyeClientConfig {
   apiKey: string;
   baseUrl: string; // https://public-api.birdeye.so
+  chain?: string;
   timeoutMs: number;
   retry: RetryConfig;
   circuitBreaker: CircuitBreakerConfig;

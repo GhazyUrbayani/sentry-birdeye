@@ -30,6 +30,7 @@ function backoffMs(attempt: number, base: number, max: number): number {
 export class BirdeyeClient {
   private readonly apiKey: string;
   private readonly baseUrl: string;
+  private readonly chain: string;
   private readonly timeoutMs: number;
   private readonly maxRetries: number;
   private readonly baseDelayMs: number;
@@ -49,6 +50,7 @@ export class BirdeyeClient {
   constructor(config: Config) {
     this.apiKey = config.apiKey;
     this.baseUrl = config.baseUrl.replace(/\/$/, '');
+    this.chain = (config.chain ?? process.env['BIRDEYE_CHAIN'] ?? 'solana').toLowerCase();
     this.timeoutMs = config.timeoutMs;
     this.maxRetries = config.retry.maxRetries;
     this.baseDelayMs = config.retry.baseDelayMs;
@@ -130,6 +132,7 @@ export class BirdeyeClient {
     const headers = new Headers(init.headers);
     headers.set('X-API-KEY', this.apiKey);
     headers.set('accept', 'application/json');
+    headers.set('x-chain', this.chain);
 
     const timeoutMs = this.timeoutMs;
 
