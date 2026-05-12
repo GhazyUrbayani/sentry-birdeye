@@ -5,9 +5,10 @@ import type { TokenScanRecord } from '@/types';
 
 export const dynamic = 'force-dynamic';
 
+type SearchParams = Record<string, string | string[] | undefined>;
 
 type PageProps = {
-  searchParams?: { q?: string };
+  searchParams?: Promise<SearchParams>;
 };
 
 function errorMessage(error: unknown): string {
@@ -15,7 +16,14 @@ function errorMessage(error: unknown): string {
 }
 
 export default async function Page({ searchParams }: PageProps) {
-  const queryRaw = typeof searchParams?.q === 'string' ? searchParams.q.trim() : '';
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
+  const rawQuery = resolvedSearchParams?.q;
+  const queryRaw =
+    typeof rawQuery === 'string'
+      ? rawQuery.trim()
+      : Array.isArray(rawQuery)
+        ? rawQuery[0]?.trim() ?? ''
+        : '';
   const query = queryRaw.toLowerCase();
 
   let tokens: TokenScanRecord[] = [];
