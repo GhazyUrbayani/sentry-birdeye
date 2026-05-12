@@ -4,6 +4,29 @@ import { sendTelegramMessage } from '@/lib/telegram/bot';
 
 export const runtime = 'edge';
 
+export async function GET(req: Request) {
+  const url = new URL(req.url);
+  // Construct the webhook URL dynamically based on the current Vercel host
+  const webhookUrl = `${url.protocol}//${url.host}/api/telegram`;
+  
+  const token = process.env['TELEGRAM_BOT_TOKEN'];
+  if (!token) {
+    return NextResponse.json({ error: 'TELEGRAM_BOT_TOKEN is not set in environment variables.' }, { status: 500 });
+  }
+
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${token}/setWebhook?url=${webhookUrl}`);
+    const data = await res.json();
+    return NextResponse.json({ 
+      status: 'Webhook Registration Attempt', 
+      webhookUrl, 
+      telegramResponse: data 
+    });
+  } catch (error) {
+    return NextResponse.json({ error: 'Failed to contact Telegram API' }, { status: 500 });
+  }
+}
+
 export async function POST(req: Request) {
   try {
     const update = (await req.json().catch(() => ({}))) as any;
