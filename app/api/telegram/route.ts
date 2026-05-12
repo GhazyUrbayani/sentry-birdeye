@@ -27,7 +27,7 @@ export async function POST(req: Request) {
         }
 
         // Send welcome message
-        const token = process.env.TELEGRAM_BOT_TOKEN;
+        const token = process.env['TELEGRAM_BOT_TOKEN'];
         if (token) {
           await sendTelegramMessage({
             token,
