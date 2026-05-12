@@ -1,8 +1,8 @@
-<div align="center">
-
   <img src="https://readme-typing-svg.herokuapp.com?font=Plus+Jakarta+Sans&weight=800&size=36&pause=1000&color=10B981&center=true&vCenter=true&width=500&lines=%F0%9F%9B%A1%EF%B8%8F+SENTRY;Pre-Trade+Intelligence;Detect+Rugpulls+Instantly;AI-Powered+Solana+Scanner" alt="SENTRY Typing Header" />
 
   ### *High-Performance Pre-Trade Risk Intelligence & Solana Token Scanner*
+
+<img width="1470" height="716" alt="image" src="https://github.com/user-attachments/assets/602e2b03-cf3c-45f7-854f-b87bff910864" />
 
   <p align="center">
     <img src="https://img.shields.io/badge/Next.js-15.0-000000?style=for-the-badge&logo=nextdotjs&logoColor=white" alt="Next.js 15" />
