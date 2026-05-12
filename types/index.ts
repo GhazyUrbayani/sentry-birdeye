@@ -391,6 +391,7 @@ export interface TelegramAlertMessage {
   text: string;
   parseMode?: 'HTML' | 'MarkdownV2';
   disableWebPagePreview?: boolean;
+  replyMarkup?: Record<string, unknown>;
 }
 
 export interface TelegramDispatchResult {

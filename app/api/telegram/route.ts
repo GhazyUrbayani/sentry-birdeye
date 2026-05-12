@@ -70,6 +70,16 @@ export async function POST(req: Request) {
             message: {
               chatId,
               text: `Status: SENTRY is actively monitoring the Solana network 🟢\n\nI am an automated broadcast bot. You don't need to send me any commands. I will automatically send an alert here as soon as a new token passes the risk evaluation!\n\n🌐 View Live Dashboard:\n${appUrl}`,
+              replyMarkup: {
+                inline_keyboard: [
+                  [
+                    {
+                      text: "Join Birdeye Telegram",
+                      url: "https://t.me/birdeye_so"
+                    }
+                  ]
+                ]
+              }
             },
           });
         }

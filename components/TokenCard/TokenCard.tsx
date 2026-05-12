@@ -87,7 +87,7 @@ export function TokenCard({ token }: { token: TokenScanRecord & { id?: string } 
         {/* Actions */}
         <div className="flex items-center gap-2 pt-1">
           <a 
-            href={`https://jup.ag/swap/SOL-${token.address}`} 
+            href={`https://jup.ag/swap?sell=EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v&buy=${token.address}`} 
             target="_blank" 
             rel="noreferrer"
             className="flex-1 rounded-lg bg-emerald-500/10 py-1.5 text-center text-xs font-medium text-emerald-400 hover:bg-emerald-500/20 transition-colors"

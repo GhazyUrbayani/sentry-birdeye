@@ -50,6 +50,7 @@ export async function sendTelegramMessage(input: {
         text: input.message.text,
         parse_mode: input.message.parseMode,
         disable_web_page_preview: input.message.disableWebPagePreview ?? true,
+        ...(input.message.replyMarkup ? { reply_markup: input.message.replyMarkup } : {}),
       }),
     });
 
