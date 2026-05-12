@@ -1,5 +1,3 @@
-<img width="1470" height="956" alt="image" src="https://github.com/user-attachments/assets/96ad769c-11dc-4316-9e9d-62996fa950dc" /><div align="center">
-
   <img src="https://readme-typing-svg.herokuapp.com?font=Plus+Jakarta+Sans&weight=800&size=36&pause=1000&color=10B981&center=true&vCenter=true&width=500&lines=%F0%9F%9B%A1%EF%B8%8F+SENTRY;Pre-Trade+Intelligence;Detect+Rugpulls+Instantly;AI-Powered+Solana+Scanner" alt="SENTRY Typing Header" />
 
   ### *High-Performance Pre-Trade Risk Intelligence & Solana Token Scanner*
