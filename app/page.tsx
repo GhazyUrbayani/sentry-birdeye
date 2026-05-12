@@ -45,7 +45,12 @@ export default async function Page({ searchParams }: PageProps) {
   const showLatest = tokens.length > 0 || Boolean(tokensError);
 
   return (
-    <main className="mx-auto max-w-6xl px-4 py-10">
+    <div className="relative min-h-screen bg-[#0B0E14] overflow-hidden">
+      {/* Ambient background glows */}
+      <div className="pointer-events-none fixed top-[-20%] left-[-10%] h-[500px] w-[500px] rounded-full bg-emerald-500/10 blur-[120px]" />
+      <div className="pointer-events-none fixed bottom-[-20%] right-[-10%] h-[600px] w-[600px] rounded-full bg-sky-500/10 blur-[150px]" />
+      
+      <main className="relative mx-auto max-w-6xl px-4 py-10">
       <header className="mb-8 space-y-2">
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
           <div>
@@ -111,6 +116,7 @@ export default async function Page({ searchParams }: PageProps) {
         <RadarFeed query={queryRaw} />
       </div>
     </main>
+    </div>
   );
 }
 

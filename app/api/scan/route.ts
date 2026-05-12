@@ -5,8 +5,10 @@ import type { HealthStatusResponse, TokenScanRecord, TokenSnapshot } from '@/typ
 import { BirdeyeClient } from '@/lib/birdeye/client';
 import { createBirdeyeEndpoints } from '@/lib/birdeye/endpoints';
 import { cache } from '@/lib/cache/redis';
-import { convexMutation } from '@/lib/convex/client';
+import { convexMutation, convexQuery } from '@/lib/convex/client';
 import { AggressiveScorer, ConservativeScorer, ScoreEngineImpl } from '@/lib/scoring/engine';
+import { generateAIBrief } from '@/lib/ai/prompts';
+import { sendTelegramMessage, formatAlertMessage } from '@/lib/telegram/bot';
 
 export const runtime = 'edge';
 
@@ -136,14 +138,49 @@ export async function GET(req: Request) {
     };
 
     const scored = scorer.evaluate({ snapshot, now: new Date() });
+    
+    // Generate AI Brief
+    const aiBrief = await generateAIBrief(snapshot, scored.score, scored.grade);
+
     const record = mapScanRecord({
       snapshot,
       score: { score: scored.score, grade: scored.grade, flags: scored.flags },
       scannedAt,
-      aiBrief: null,
+      aiBrief,
     });
     await upsertScan(record);
     records.push(record);
+  }
+
+  // Telegram Broadcast for SAFE or DEGEN tokens
+  try {
+    const alertableTokens = records.filter(r => r.grade === 'SAFE' || r.grade === 'DEGEN');
+    if (alertableTokens.length > 0) {
+      const activeSubscribers = await convexQuery<Array<{ chatId: number }>>('subscribers:listActive');
+      if (activeSubscribers && activeSubscribers.length > 0) {
+        const tgToken = process.env['TELEGRAM_BOT_TOKEN'];
+        const appUrl = process.env['NEXT_PUBLIC_APP_URL'] || 'https://sentry.birdeye.so';
+        
+        if (tgToken) {
+          for (const token of alertableTokens) {
+            const msg = formatAlertMessage({
+              address: token.address,
+              symbol: token.symbol,
+              grade: token.grade,
+              score: token.score,
+              flags: token.flags,
+              appUrl
+            });
+            // Broadcast to all active subscribers
+            for (const sub of activeSubscribers) {
+              await sendTelegramMessage({ token: tgToken, message: { ...msg, chatId: sub.chatId } });
+            }
+          }
+        }
+      }
+    }
+  } catch (err) {
+    console.error('Telegram broadcast failed:', err);
   }
 
   const durationMs = Date.now() - startedAt;

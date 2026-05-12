@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import type { TokenScanRecord } from '@/types';
 import { GradeBadge } from '@/components/Gradebadge/GradeBadge';
 
@@ -39,12 +40,16 @@ export function TokenCard({ token }: { token: TokenScanRecord & { id?: string } 
     hour12: false,
   });
 
-  const isHolderMissing = token.flags?.includes('HOLDER_DATA_MISSING');
   const visibleFlags = token.flags?.filter(f => f !== 'HOLDER_DATA_MISSING') ?? [];
+
+  const cardBaseClasses = "flex w-full flex-col gap-3 rounded-xl border p-4 transition-all duration-500 backdrop-blur-md animate-in fade-in slide-in-from-bottom-4";
+  const safeGlowClasses = "border-emerald-500/30 bg-emerald-500/5 shadow-[0_0_20px_rgba(16,185,129,0.15)] hover:shadow-[0_0_30px_rgba(16,185,129,0.25)] hover:border-emerald-500/50";
+  const defaultClasses = "border-white/10 bg-gradient-to-b from-white/5 to-white/0 hover:border-white/20";
+  const cardClassName = `${cardBaseClasses} ${token.grade === 'SAFE' ? safeGlowClasses : defaultClasses}`;
 
   return (
     <>
-      <div className="flex w-full flex-col gap-3 rounded-xl border border-white/10 bg-gradient-to-b from-white/5 to-white/0 p-4 transition-colors hover:border-white/20">
+      <div className={cardClassName}>
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
           <div className="flex flex-1 items-center gap-3 min-w-0">
@@ -62,10 +67,12 @@ export function TokenCard({ token }: { token: TokenScanRecord & { id?: string } 
           </div>
         </div>
 
-        {/* AI Brief if available */}
         {token.aiBrief && (
-          <div className="rounded-lg bg-sky-500/10 px-3 py-2 text-xs italic text-sky-200/80">
-            ✨ {token.aiBrief}
+          <div className="relative overflow-hidden rounded-lg bg-sky-500/10 px-3 py-2 text-xs italic text-sky-200/90 border border-sky-500/20 shadow-inner group">
+            <span className="flex gap-2">
+              <span className="animate-pulse">✨</span> 
+              <span className="tracking-wide">{token.aiBrief}</span>
+            </span>
           </div>
         )}
 
@@ -76,11 +83,6 @@ export function TokenCard({ token }: { token: TokenScanRecord & { id?: string } 
               {flag.replace(/_/g, ' ')}
             </span>
           ))}
-          {isHolderMissing && (
-            <span className="flex items-center gap-1 rounded bg-amber-500/20 px-1.5 py-0.5 text-[10px] font-medium text-amber-300">
-              <span className="animate-pulse">⏳</span> Analyzing Holders
-            </span>
-          )}
         </div>
 
         {/* Metrics Grid */}
@@ -127,8 +129,8 @@ export function TokenCard({ token }: { token: TokenScanRecord & { id?: string } 
       </div>
 
       {/* Chart Modal (Inline Terminal Experience) */}
-      {mounted && isChartOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+      {mounted && isChartOpen && createPortal(
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6">
           <div 
             className="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer"
             onClick={() => setIsChartOpen(false)}
@@ -171,14 +173,15 @@ export function TokenCard({ token }: { token: TokenScanRecord & { id?: string } 
             {/* Modal Body: Chart Iframe */}
             <div className="flex-1 w-full bg-black/50">
               <iframe 
-                src={`https://dexscreener.com/solana/${token.address}?embed=1&theme=dark`}
+                src={`https://birdeye.so/tv-widget/${token.address}?chain=solana&viewMode=pair&chartInterval=15`}
                 className="w-full h-full border-none"
                 allow="clipboard-write"
                 title={`${symbol} Chart`}
               />
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

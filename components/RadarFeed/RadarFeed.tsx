@@ -54,7 +54,8 @@ export function RadarFeed({ query = '' }: { query?: string }) {
     <section className="space-y-3">
       <div className="flex items-center justify-between">
         <h2 className="text-sm font-semibold text-white">Live Radar</h2>
-        <span className={['text-xs', connected ? 'text-emerald-300' : 'text-white/50'].join(' ')}>
+        <span className={['text-xs flex items-center gap-1.5', connected ? 'text-emerald-300' : 'text-white/50'].join(' ')}>
+          {connected && <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span>}
           {connected ? 'connected' : 'disconnected'}
         </span>
       </div>

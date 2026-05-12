@@ -1,4 +1,4 @@
-import { mutation } from './_generated/server';
+import { mutation, query } from './_generated/server';
 import { v } from 'convex/values';
 
 export const upsert = mutation({
@@ -32,5 +32,15 @@ export const upsert = mutation({
     });
 
     return { id };
+  },
+});
+
+export const listActive = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db
+      .query('subscribers')
+      .filter((q) => q.eq(q.field('active'), true))
+      .collect();
   },
 });
