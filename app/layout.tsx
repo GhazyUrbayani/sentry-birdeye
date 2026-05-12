@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import { MouseGradient } from '@/components/MouseGradient/MouseGradient';
 
 export const metadata: Metadata = {
   title: 'SENTRY — Pre-Trade Intelligence (Solana)',
@@ -13,7 +14,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className="font-sans">
-      <body className="min-h-screen text-white antialiased">{children}</body>
+      <body className="min-h-screen text-white antialiased">
+        <MouseGradient />
+        {children}
+      </body>
     </html>
   );
 }
