@@ -177,13 +177,13 @@ export function createBirdeyeEndpoints(input: { client: BirdeyeHttpClient; cache
       const hit = await cache.getJson<{ liquidity: number | null, volume24h: number | null, priceChange24h: number | null }>(cacheKey);
       if (hit.hit) return { ok: true, value: hit.value };
 
-      const res = await client.getJson<OverviewResponse>(`/defi/token_overview?address=${params.address}`);
+      const res = await client.getJson<any>(`/defi/token_overview?address=${params.address}`);
       if (!res.ok) return res;
       
       const mapped = {
         liquidity: res.value?.liquidity ?? null,
-        volume24h: res.value?.volume24hUSD ?? null,
-        priceChange24h: res.value?.price24hChangePercent ?? null,
+        volume24h: res.value?.v24hUSD ?? res.value?.volume24hUSD ?? null,
+        priceChange24h: res.value?.v24hChangePercent ?? res.value?.price24hChangePercent ?? null,
       };
       await cache.setJson(cacheKey, mapped, TTL.overview);
       return { ok: true, value: mapped };
