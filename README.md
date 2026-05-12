@@ -1,4 +1,6 @@
+  <p align="center">
   <img src="https://readme-typing-svg.herokuapp.com?font=Plus+Jakarta+Sans&weight=800&size=36&pause=1000&color=10B981&center=true&vCenter=true&width=500&lines=%F0%9F%9B%A1%EF%B8%8F+SENTRY;Pre-Trade+Intelligence;Detect+Rugpulls+Instantly;AI-Powered+Solana+Scanner" alt="SENTRY Typing Header" />
+  </p>
 
   ### *High-Performance Pre-Trade Risk Intelligence & Solana Token Scanner*
 
@@ -25,16 +27,6 @@
 
   [![Live Demo](https://img.shields.io/badge/🚀_Live_Demo-sentry--birdeye.vercel.app-10B981?style=for-the-badge)](https://sentry-birdeye.vercel.app/) [![Lapor Bug](https://img.shields.io/badge/🐛_Lapor_Bug-Issues-red?style=for-the-badge)](https://github.com/GhazyUrbayani/sentry-birdeye/issues) [![Dokumentasi](https://img.shields.io/badge/📖_Dokumentasi-README-blue?style=for-the-badge)](#-panduan-instalasi)
 
-</div>
-
----
-
-## 🎥 Platform Demo
-
-<div align="center">
-  <img src="./platform_demo.webp" alt="SENTRY Platform Demo" width="800" />
-  <br />
-  <i>*Animasi WebP dari UI Platform SENTRY yang sedang berjalan</i>
 </div>
 
 ---
